@@ -1,4 +1,4 @@
-function colour = getColour(val, maxVal, cMapInd)
+function colour = getColour(val, maxVal, cMapInd, lightness)
 % getColour() will produce an RGB triplet based on a colourmap specified in
 % cMap, which is proportional to some current value and the max value
 
@@ -14,10 +14,12 @@ function colour = getColour(val, maxVal, cMapInd)
     % 'y', 'p', 'g', 'lb', 'r' 'br', OR an integer from the set 1 - 7 - in
     % this case, following outputs become irrelevant
 % maxVal - the maximum possible value
-% cMapInd - optional  - the type of colourmap used, e.g. "jet", or could be
+% cMapInd - optional - the type of colourmap used, e.g. "jet", or could be
     % any of the colours mentioned for val, in which place colourmap
     % transitions from white to said colour - default is "mine" for
     % myColourMap
+% lightness - optional - the lightness of the colour with 0 being not
+    % the standard colour, and 1 being completely white lmao (default is 0)
 
 % outputs:
 
@@ -33,8 +35,13 @@ if nargin < 2 || isempty(maxVal)
     maxVal = [];
 end
 
+% set the default lightness
+if nargin < 4 || isempty(lightness)
+    lightness = 0;
+end
+
 % create a vector of the colour possibilities
-colourCodes = ['b', 'o', 'y', 'p', 'g', 'lb', 'r', 'w'];
+colourCodes = ['b', 'o', 'y', 'p', 'g', 'lb', 'r', 'w', 'pi'];
 
 % convert the integer value to an rgb triplet
 if nargin == 1 && (((class(val) == "double" && round(val) == val) ...
@@ -71,6 +78,8 @@ if class(val) == "char" || class(val) == "string"
             colour = [200, 100, 16] / 256;
         case {'w', "w"}
             colour = [1, 1, 1];
+        case {'pi', "pi"}
+            colour = 0.6 * [0.9490, 0.4030, 0.7720] + 0.4 * [1, 1, 1];
         otherwise
             colour = [0.6350 0.0780 0.1840];
             
@@ -93,5 +102,8 @@ else
     colour = cMap(max([ceil(size(cMap, 1) * (val / maxVal)), 1]), :);
 
 end
+
+% if I want the colour to be slightly opaque then return this
+colour = (1 - lightness) * colour + lightness * [1, 1, 1];
 
 end
